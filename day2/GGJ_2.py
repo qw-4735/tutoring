@@ -49,7 +49,7 @@ for epoch in range(nb_epochs + 1):
 
     # loss로 y_pred 개선
     optimizer.zero_grad()
-    cost.backward()
+    loss.backward()
     optimizer.step()
    
     # 100번마다 로그 출력

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 torch.manual_seed(1)
-#GPU를 통해 만들어내는 결과들에 randomness 를 통제
+#GPU를 통해 만들어내는 결과들의 randomness 를 통제
 
 #%%
 # 단순 선형 회귀

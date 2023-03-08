@@ -53,9 +53,10 @@ for epoch in range(nb_epochs + 1):
     optimizer.step()
    
     # 100번마다 로그 출력
-     if epoch % 100 == 0:
+    if epoch % 100 == 0:
         print('Epoch {:4d}/{} Cost: {:.6f}'.format(
-            epoch, nb_epochs, cost.item()
+            epoch, nb_epochs, loss.item()
         ))
+
     
 #%%    

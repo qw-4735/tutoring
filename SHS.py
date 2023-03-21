@@ -1,3 +1,5 @@
+
+
 #%%
 import torch
 from torch import nn
@@ -81,10 +83,11 @@ y = torch.bernoulli(torch.sigmoid(x @ beta)).to(torch.float32)
 #y = torch.tensor(list(repeat(1., 50)) + list(repeat(0., 50)))->0 또는 1
 #y.shape : torch.Size([100])
 
-
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = seed)
 
 #%%
+
+##데이터셋 만들기
 class MyDataset(Dataset):
     def __init__(self, x_data, y_data):
         self.x_data = x_data
@@ -106,9 +109,9 @@ test_loader = DataLoader(test_set, batch_size = 1)
 #%%
 # 1. Logistic Regression 모형 작성
 class LogisticRegression(nn.Module):
-    def __init__(self, p):
+    def __init__(self,p):
         super(LogisticRegression, self).__init__()
-        self.linear = nn.Linear(p, 2)
+        self.linear = nn.Linear(p, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
@@ -120,22 +123,15 @@ class LogisticRegression(nn.Module):
 # 2. train function 코드 작성 
 def train(model, device, criterion, loader):
     model.train()
-    #모듈을 평가 모드로 설정한다
     
     for step, (data, target) in enumerate(loader):
-        #enumerate() : 리스트의 원소에 순서값을 부여해주는 함수    
-        
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
-        #.zero_grad() : 갱신할 Variable들에 대한 모든 변화도를 0으로 만든다
+        target = target.unsqueeze(1)
         pred = model(data)
-        #모델에 data를 전달하여 예상하는 target 값을 계산한다
         loss = criterion(pred, target)
-        #모델에서 나온 pred_prob과 target을 이용해 loss를 계산한다
         loss.backward()
-        #.backward() : 역전파 단계 실행. 모델의 Variable들에 대한 손실의 변화도를 계산한다
         optimizer.step()
-        #.step() : 가중치를 갱신한다
     
 
 #%%
@@ -143,39 +139,27 @@ def train(model, device, criterion, loader):
 @torch.no_grad()
 def eval(model, device, criterion, loader):
     model.eval()
-    #모델 내부의 모든 layer가 evaluation 모드가 된다
     test_loss = 0
     correct = 0
-    #테스트 오차와 예측이 맞은 수를 담을 변수를 0으로 초기화한다
-    
+
     for step, (data, target) in enumerate(loader):
         data, target = data.to(device), target.to(device)
         pred_prob = model(data)
-        #모델에 data를 전달하여 예상하는 target 값을 계산한다
+        target = target.unsqueeze(1)
         loss = criterion(pred_prob, target)
-        #모델에서 나온 pred_prob과 target을 이용해 loss 계산한다
         test_loss += loss
-        #모든 오차를 더한다
         pred = pred_prob.argmax(dim=1, keepdim=True)
         correct += pred.eq(target.view_as(pred)).sum().item()
-        '''
-        예측과 정답을 비교하여 일치할 경우 correct에 1을 더한다
-        eq() : 추출한 모델의 예측과 레이블이 일치하는지를 알아본다-> 값이 일치하면 1, 아니면 0을 출력한다
-        view_as() : target 텐서를 인수(pred)의 모양대로 다시 정렬한다
-        sum() : 맞은 것인 1들의 합이 구해진다
-        item() : 딕셔너리 값들을 쌍으로 불러낸다
-        '''
         
     test_loss /= len(loader.dataset)
-    #test_loss의 평균을 구한다
     acc = correct/len(loader.dataset) * 100
-    #정답 평균에는 100을 곱하여 정확도를 구한다 
     return test_loss, acc
 
 #%%
 # 4. 학습 코드 작성
-model = LogisticRegression(10) 
-criterion = torch.nn.BCELoss()
+input_dim = 2
+model = LogisticRegression(input_dim) 
+criterion = nn.BCELoss() #이진분류문제
 learning_rate = 0.01
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
@@ -186,4 +170,10 @@ for epoch in range(10):
     test_loss, test_acc = eval(model, device, criterion, test_loader)
     print(f'epoch: {epoch}, train loss: {train_loss}, test_loss: {test_loss}, test acc: {test_acc}%')
 
-# %%
+
+'''
+train function, test function을 만드려고 이전 코드들을 참고해서 data loader 부분을 만들기 위해
+dataset을 새롭게 만들었는데, criterian 적용 부분에서 input size는 torch.Size([10, 1]), target size는 torch.Size([10])로 다르게 나옵니다.
+그래서 unsqueeze함수를 추가했는데, 차원을 마음대로 변경시켜도 문제가 없는지 궁금합니다.
+그리고 차원을 변경시킬 때, target size를 변경시키는 게 좋을지, input size를 변경시키는 게 좋을지 궁금합니다!
+'''

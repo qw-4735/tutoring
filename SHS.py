@@ -180,4 +180,8 @@ train function, test function을 만드려고 이전 코드들을 참고해서 d
 dataset을 새롭게 만들었는데, criterian 적용 부분에서 input size는 torch.Size([10, 1]), target size는 torch.Size([10])로 다르게 나옵니다.
 그래서 unsqueeze함수를 추가했는데, 차원을 마음대로 변경시켜도 문제가 없는지 궁금합니다.
 그리고 차원을 변경시킬 때, target size를 변경시키는 게 좋을지, input size를 변경시키는 게 좋을지 궁금합니다!
+
+저번 과제에서 x = iter(next(train_loader))라는 구문이 있었는데, 어떻게 코드를 해석해야될지 모르겠습니다.
+iter() 함수가 반복 가능한 객체를 반환해주고 next() 함수가 현재 행을 읽으면서 데이터의 탐색 위치를 다음 행으로 이동시킨다고 하는데,
+for문과 같은 작업을 한다고 생각하면 될까요?
 '''

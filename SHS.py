@@ -30,6 +30,7 @@ else:
 # data generation
 seed = 0
 torch.manual_seed(seed)
+#manual_seed() : 현재 GPU를 통해 만들어내는 결과들에 randomness 를 통제
 
 mean_vec = list(repeat(1, 50)) + list(repeat(3, 50))
 mean = torch.Tensor([mean_vec, list(reversed(mean_vec))])
@@ -89,13 +90,16 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, rando
 
 ##데이터셋 만들기
 class MyDataset(Dataset):
+    #데이터셋의 전처리를 해주는 부분
     def __init__(self, x_data, y_data):
         self.x_data = x_data
         self.y_data = y_data
-        
+    
+    #데이터셋에서 특정 1개의 샘플을 가져오는 함수
     def __getitem__(self, index): 
         return self.x_data[index], self.y_data[index]
-        
+    
+    #데이터셋의 길이. 즉, 총 샘플의 수를 적어주는 부분   
     def __len__(self): 
         return len(self.x_data)
 

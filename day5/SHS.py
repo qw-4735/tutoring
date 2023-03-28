@@ -96,7 +96,7 @@ for epoch in range(nb_epochs+1):
 
     y_pred = model(x_train)
     loss = Cross_entropy(y_pred, y_train)
-    #loss는 파이토치에서 제공하는 평균 제곱 오차 함수
+    #loss가 계속해서 일정하게 나오는데, crossentropy 코드를 잘못 작성한 것일지 궁금합니다.
 
     optimizer.zero_grad()
     loss.backward() 

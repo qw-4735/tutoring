@@ -59,14 +59,14 @@ class Logit(nn.Module):
     
     def forward(self, x):
         prob = F.sigmoid(x @ self.weight + self.bias)
-        return 
+        return prob 
 
 
     
 # 2. cross entropy 함수 작성
 def cross_entropy(prob, target):
     l = -torch.mean(target * torch.log(prob) + (1-target) * torch.log(1-prob))
-    return 
+    return l
 
 
 

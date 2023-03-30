@@ -1,3 +1,6 @@
+#
+import wandb
+#
 import torch
 from torch import nn
 import torch.optim as optim
@@ -107,6 +110,11 @@ def eval(model, x, y):
     
     return loss, auc
 
+# fitting
+# login wandb and connect the project
+wandb.login(key="my-api-key")
+wandb.init(project="internship")
+
 
 input_dim = x.size(1)
 output_dim = 1
@@ -118,7 +126,19 @@ for epoch in range(1, 1000+1):
     train_loss, train_auc = eval(model, x_train, y_train)
     test_loss, test_auc = eval(model, x_test, y_test)
     
+    #
+     wandb.log({'epoch': epoch,
+               'train loss': train_loss,
+               'test loss': test_loss,
+               'train acc': train_acc,
+               'test acc': test_acc})
+    #
+    
     if epoch % 10 == 0:
         print(f'epoch = {epoch}\n\
                 train loss = {train_loss}, test loss = {test_loss}\n\
                 train auc = {train_auc}, test auc = {test_auc}')
+
+#
+wandb.finish()
+#

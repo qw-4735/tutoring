@@ -1,0 +1,6 @@
+# 1. https://tutorials.pytorch.kr/intermediate/char_rnn_classification_tutorial  
+     한 줄씩 실행해보고, 주석 꼼꼼히 달기
+
+# 2. wandb로 loss 시각화해보기  
+
+(시각화 결과와 한 줄 실행한 일부분을 사진 찍어서 함께 올려주세요)

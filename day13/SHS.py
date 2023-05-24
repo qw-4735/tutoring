@@ -1,3 +1,14 @@
+'''
+seq2seq는 인코더와 디코더로 구성
+인코더는 입력 문장의 모든 단어들을 순차적으로 입력받은 뒤 마지막에 이 모든 단어 정보들을 압축해서 하나의 벡터인 컨텍스트 벡터 생성
+인코더는 컨텍스트 벡터(인코더 RNN 셀의 마지막 시점의 은닉 상태)를 디코더(디코더 RNN 셀의 첫번째 은닉 상태)로 전송
+
+train 과정 : 정답을 알려주면서 훈련
+test 과정 : 디코더는 컨텍스트 벡터와 <sos>만을 입력으로 받은 후에 다음에 올 단어를 예측하고, 그 단어를 다음 시점의 RNN 셀의 입력으로 넣는 행위를 반복
+'''
+
+
+
 #%%
 import numpy as np 
 import pandas as pd 
@@ -276,9 +287,21 @@ class lstm_encoder_decoder(nn.Module):
 
 #for x,y in train_loader : 
 #    print(y[:, 2, :].shape) #torch.Size([64, 1]) torch.Size([9, 1])
+
 '''
 0번째 hidden state와 그 가중치의 곱 + 1번째 Input값과 그 가중치의 곱 = 1번째 hidden state
-  
+
+
+output 추출 방법
+1. 각 time step마다 output이 필요한 경우 
+(마지막 LSTM cell의 hidden_state 추출)
+last_output = hidden[0].squeeze()
+print(last_output)
+
+2. 마지막 LSTM cell의 output만 필요한 경우
+(out의 마지막 열들을 모두 추출)
+last_output = out[:,-1]
+print(last_output)
 '''  
 
 #%%
@@ -303,6 +326,7 @@ with tqdm(range(epoch)) as tr:
             optimizer.zero_grad()
             #Data:torch.Size([64, 336, 1]), y:torch.Size([64, 168, 1])
             x = x.to(device).float()
+            #nn.LSTM은 float형을 기반으로 연산
             y = y.to(device).float()
             output = model(x, y, ow, 0.6).to(device)
             loss = criterion(output, y)

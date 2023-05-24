@@ -129,7 +129,6 @@ for  data1 in train_loader:
 
 #%%
 #Modeling
-
 #LSTM encoder
 #input 으로부터 입력을 받고 lstm을 이용하여 디코더에 전달할 hidden state를 생성
 class lstm_encoder(nn.Module):
@@ -194,8 +193,14 @@ class lstm_decoder(nn.Module):
 
 #%%
 b=lstm_decoder(input_size = 1, hidden_size = 16) 
+a=lstm_encoder(input_size = 1, hidden_size = 16)    
+for x,y in train_loader:
+    output, hidden = a(x.float())
+    out = b(x[:,-1, :].float(),hidden)
+    print(out[0].shape) #torch.Size([64, 1, 1]) torch.Size([9, 1, 1])
 
-
+for x,y in train_loader:
+    print(x[:,-1, :].shape) #torch.Size([64, 1]) torch.Size([9, 1])
 '''
 Inputs: input, (h_0, c_0)
 input - (L, H_in) : unbatched input
@@ -254,7 +259,7 @@ class lstm_encoder_decoder(nn.Module):
         
         #원하는 길이가 될 때까지 decoder를 실행한다.
         for t in range(target_len): 
-            out, hidden = self.decoder(decoder_input, hidden)
+            out, hidden = self.decoder(decoder_input, hidden) #out : torch.Size([64, 1, 1]) torch.Size([9, 1, 1])
             out =  out.squeeze(1)
             #squeeze(1):차원이 1인 경우에는 해당 차원을 제거
             

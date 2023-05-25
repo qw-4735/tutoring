@@ -35,10 +35,10 @@ train = train["평균속도"].to_numpy()
 
 train.size #576
 
-test = data[-24*7:]
+test = data[-24*7-24*14:]
 test = test["평균속도"].to_numpy()
 
-test.size #168
+test.size #504
 
 data.shape #(744, 3)
 

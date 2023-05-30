@@ -18,8 +18,6 @@ tok("[CLS] [SEP] [MASK] [UNK]")['input_ids']
 #마스킹 ([MASK]=103[MASK] = 103[MASK]=103) 및 알 수 없는 기호 ([UNK]=100) 
 
 
-
-
 #%%
 #임베딩(Embeddings)
 #임베딩을 통해 벡터로 변환->정규화
@@ -251,6 +249,7 @@ class Encoder(nn.Module):
     def __init__(self, layer, n: int = 6):
         super(Encoder, self).__init__()
         self.layers = nn.ModuleList([deepcopy(layer) for _ in range(n)])
+        #deepcopy() : copy()와 달리 별개의 복제된 버전을 생성 -> 원본에 영향이 없음
         '''
         x가 layer 입력으로 들어가고 그에 대한 결과물을 x로 받는다.
         for 문 안에서 이 x가 다시 layer의 입력으로 들어가게 된다.
@@ -291,6 +290,7 @@ class DecoderLayer(nn.Module):
         #2. multi-head attention (encoder-decoder attention)
         x = self.sub2(x, lambda x: self.src_attn(x, memory, memory, src_mask))
         #query는 decoder에서 올라오고, key, value는 encoder에서 넘어온 값(memory)을 사용
+        # -> encoder의 모든 단어의 정보가 decoder 단어에 대한 attention 정보에 영향
         
         return self.sub3(x, self.feed_forward)
 
@@ -354,7 +354,7 @@ def make_model(input_vocab: int, output_vocab: int, d_model: int = 512):
     output = Output(input_dim=d_model, output_dim=output_vocab)
     model = EncoderDecoder(encoder, decoder, input_embed, output_embed, output)
     
-    # Initialize parameters with Xavier uniform 
+    # 모델의 전체 파라미터 초기화
     for p in model.parameters():
         if p.dim() > 1:
             nn.init.xavier_uniform_(p)

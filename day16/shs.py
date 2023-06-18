@@ -259,3 +259,16 @@ for i in progress:
         batchloss += loss
     progress.set_description("loss: {:0.6f}".format(batchloss.cpu().item() / len(train_loader)))
 # torch.save(model.state_dict(), 'model.pth')
+
+#%%
+@torch.no_grad()        
+def evaluate():
+    model.eval()
+    
+    inputs = torch.tensor(train_scaled[-iw:]).reshape(1,-1,num_feat).to(torch.float32).to(device)
+    src_mask = model.generate_square_subsequent_mask(inputs.shape[1]).to(device)
+    pred = model(inputs, src_mask)
+    
+    return pred.detach().cpu().numpy()
+
+#%%
